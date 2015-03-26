@@ -1,6 +1,9 @@
 # asteroid
 Asteroid clone inspired by RiceRocks from Introduction to Interactive Programming in Python on Coursera. 
 
-Ported to Ruby using the Gosu library.
+Implemented using the Ruby Gosu library.
 
 Contains one small level at the moment.
+
+Artwork credits:
+  Kim Lathrop (background, debris, ship, and missiles)
