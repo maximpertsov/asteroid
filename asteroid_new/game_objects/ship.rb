@@ -7,7 +7,7 @@ class Ship < GameObject
     @x, @y = x, y
     ShipGraphics.new(@window, self)
     @physics = ShipPhysics.new(@window, self)
-    ShipControls.new(@window, self)
+    ShipControls.new(@window, self, self.object_pool)
   end
 end
 
@@ -69,9 +69,10 @@ class ShipControls < Component
   
   attr_accessor :x_vel, :y_vel
   
-  def initialize(window, game_object)
-    super
+  def initialize(window, game_object, object_pool)
+    super(window, game_object)
     @physics = object.physics
+    @object_pool = object_pool
   end
 
   def update
@@ -79,5 +80,10 @@ class ShipControls < Component
     @physics.x_vel -= THRUST_SPEED if @window.button_down? Gosu::KbLeft
     @physics.y_vel += THRUST_SPEED if @window.button_down? Gosu::KbDown
     @physics.y_vel -= THRUST_SPEED if @window.button_down? Gosu::KbUp
+  end
+
+  def button_down(id)
+    m = Missile.new(@window, @object_pool, x: object.x, y: object.y)
+    m.physics.x_vel = 10
   end
 end

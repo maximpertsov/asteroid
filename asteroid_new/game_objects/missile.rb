@@ -14,7 +14,7 @@ end
 class MissileGraphics < Component
   IMAGE ||= 'shot2.png'
   TILE_SIZE ||= [10, 10]
-  LIFESPAN = 50 #ms
+  LIFESPAN = 500 #ms
   Z_SCALE ||= 1
   
   def initialize(window, game_object)

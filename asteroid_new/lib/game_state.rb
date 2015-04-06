@@ -51,26 +51,25 @@ class PlayState < GameState
   
   def initialize(window)
     super(window, scroll_x: SCROLL_SPEED)
-    @object_pool = Set.new
+    @object_pool = ObjectPool.new
     Ship.new(@window, @object_pool, x: 150, y: 150)
   end
 
   def update
-    @object_pool.delete_if {|o| o.removeable?}
-    @object_pool.each{|o| o.update}
+    @object_pool.update
     random_rock
   end
 
   def draw
-    @object_pool.each{|o| o.draw}
+    @object_pool.draw
   end
 
   def button_down(id)
     @window.enter_state(PausedState) if id == Gosu::KbP
     @window.close if id == Gosu::KbEscape     # Make this go to menu state
     random_explosion if id == Gosu::KbSpace   # TESTING
-    Missile.new(@window, @object_pool, x: 100, y: 100) if id == Gosu::KbSpace  # TESTING
-    @object_pool.each{|o| o.button_down(id)}
+    #Missile.new(@window, @object_pool, x: 100, y: 100) if id == Gosu::KbSpace  # TESTING
+    @object_pool.button_down(id)
   end
 
   private

@@ -9,6 +9,7 @@ require 'set'
 require 'game_window'
 require 'game_state'
 require 'game_object'
+require 'object_pool'
 require 'component'
 
 #entities
