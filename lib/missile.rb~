@@ -1,7 +1,0 @@
-module Asteroid
-
-  class Missile < Sprite
-    
-  end
-
-end
