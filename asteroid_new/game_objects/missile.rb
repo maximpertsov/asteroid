@@ -1,61 +1,30 @@
 class Missile < GameObject
-  attr_reader :physics
-
-  def initialize(window, object_pool, x: , y: )
-    super
-    @physics = MissilePhysics.new(@window, self)
-    MissileGraphics.new(@window, self)
+  def initialize(window, object_pool, x: , y: , vel_x: , vel_y: )
+    super(window, object_pool, x: x, y: y)
+    MissileSprite.new(@window, self)
+    MotionComponent.new(@window, self, vel_x: vel_x, vel_y: vel_y)
     MissileSounds.play(@window)
   end
 end
 
-class MissileGraphics < Component
+class MissileSprite < SpriteComponent
   IMAGE ||= 'shot2.png'
   TILE_SIZE ||= [10, 10]
   LIFESPAN = 500 #ms
-  Z_SCALE ||= 1
   
-  def initialize(window, game_object)
+  def initialize(window, game_object, image_file: IMAGE, tile_size: TILE_SIZE)
     super
-    @current_frame = 0
     @time_created = Gosu.milliseconds
-  end
-
-  def update
-    object.mark_for_removal if done?
-  end
-
-  def draw
-    image = current_frame
-    image.draw_rot(x, y, Z_SCALE, 0)
   end
   
   private
-  
-  def current_frame
-    animation[@current_frame % animation.size]
-  end
 
   def done?
     @done ||= Gosu.milliseconds - @time_created >= LIFESPAN
   end
   
   def animation
-    @@animation ||= Gosu::Image.load_tiles(@window, Utils.media_path(IMAGE), *TILE_SIZE, false)
-  end
-end
-
-class MissilePhysics < Component  
-  attr_accessor :x_vel, :y_vel
-  
-  def initialize(window, game_object, x_vel: 0, y_vel: 0)
-    super(window, game_object)
-    @x_vel, @y_vel = x_vel, y_vel
-  end
-
-  def update
-    object.x += self.x_vel
-    object.y += self.y_vel
+    @@animation ||= Utils.load_tiles(@window, @image_file, @tile_size)
   end
 end
 
