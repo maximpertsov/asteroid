@@ -1,10 +1,8 @@
 class Missile < GameObject
-  attr_accessor :x, :y
   attr_reader :physics
 
   def initialize(window, object_pool, x: , y: )
-    super(window, object_pool) 
-    @x, @y = x, y
+    super
     @physics = MissilePhysics.new(@window, self)
     MissileGraphics.new(@window, self)
     MissileSounds.play(@window)

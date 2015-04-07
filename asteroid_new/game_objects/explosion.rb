@@ -1,9 +1,6 @@
 class Explosion < GameObject
-  attr_accessor :x, :y
-
   def initialize(window, object_pool, x: , y:)
-    super(window, object_pool)
-    @x, @y = x, y
+    super
     ExplosionGraphics.new(@window, self)
     ExplosionSounds.play(@window)
   end

@@ -1,23 +1,28 @@
 class Rock < GameObject
   RADIUS ||= 40
   
-  attr_accessor :x, :y, :vel_x, :vel_y, :ang
+  attr_accessor :ang
   attr_reader :ang_vel
 
   def initialize(window, object_pool, x: , y: , vel_x: , vel_y: , ang_vel:)
-    super(window, object_pool) 
-    @x, @y = x, y
-    @vel_x, @vel_y = vel_x, vel_y
+    super(window, object_pool, x: x, y: y)
     @ang = 0
     @ang_vel = ang_vel
     @radius = RADIUS
-    [RockGraphics, RockPhysics].each{|c| c.new(@window, self)}
+    RockPhysics.new(@window, self, vel_x: vel_x, vel_y: vel_y)
+    RockGraphics.new(@window, self)
+  end
+end
+
+class RockSprite < SpriteComponent
+  def initialize(window, game_object)
+    super
   end
 end
 
 class RockGraphics < Component
-  IMAGE ||= 'asteroid_blue.png'
-  TILE_SIZE ||= [90, 90]
+  IMAGE ||= 'yarn_ball_256x256.png' #'asteroid_blue.png'
+  TILE_SIZE ||= [256, 256] # [90, 90]
   Z_SCALE ||= 1
   
   def initialize(window, game_object)
@@ -28,7 +33,7 @@ class RockGraphics < Component
 
   def draw
     image = current_frame
-    image.draw_rot(x, y, Z_SCALE, object.ang)
+    image.draw_rot(x, y, Z_SCALE, object.ang, 0.5, 0.5, 0.25, 0.25)
   end
   
   def update
@@ -50,14 +55,13 @@ class RockGraphics < Component
   end
 end
 
-class RockPhysics < Component  
-  def initialize(window, game_object)
+class RockPhysics < PhysicsComponent  
+  def initialize(window, game_object, vel_x: , vel_y: )
     super
   end
 
   def update
-    object.x += object.vel_x
-    object.y += object.vel_y
+    super
     object.ang += object.ang_vel 
   end
 end

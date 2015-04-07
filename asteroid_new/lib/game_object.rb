@@ -1,13 +1,23 @@
 class GameObject
-  def initialize(window, object_pool = nil)
+  attr_accessor :x, :y
+  
+  def initialize(window, object_pool = nil, x: , y: )
     @window = window
+    @x = x
+    @y = y
     @components = []
+    @named_components = {}
     @object_pool = object_pool
     @object_pool << self
   end
 
-  def components
-    @components
+  def add_component(component, name = nil)
+    @components << component
+    @named_components[name] = component if name
+  end
+
+  def component(name)
+    @named_components[name]
   end
 
   def update

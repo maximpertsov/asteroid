@@ -1,13 +1,16 @@
 class Ship < GameObject
-  attr_accessor :x, :y
-  attr_reader :physics
-
   def initialize(window, object_pool, x: , y: )
-    super(window, object_pool)
-    @x, @y = x, y
-    ShipGraphics.new(@window, self)
-    @physics = ShipPhysics.new(@window, self)
+    super
+    [ShipSprite, ShipPhysics, ShipGraphics].map{|c| c.new(@window, self)}
     ShipControls.new(@window, self, self.object_pool)
+  end
+end
+
+class ShipSprite < SpriteComponent
+  Z_SCALE ||= 1
+  
+  def initialize(window, game_object, z: Z_SCALE)
+    super
   end
 end
 
@@ -19,11 +22,19 @@ class ShipGraphics < Component
   def initialize(window, game_object)
     super
     @current_frame = 0
+    sprite = game_object.component(:sprite)
+    if sprite
+      @ang = sprite.ang
+      @z = sprite.z
+      @color = sprite.color
+    else
+      raise 'Sprite component missing!'
+    end
   end
 
   def draw
     image = current_frame
-    image.draw_rot(x, y, 2, 0)
+    image.draw_rot(self.x, self.y, @z, @ang, 0.5, 0.5, 1, 1, @color)
   end
   
   def update
@@ -46,44 +57,44 @@ class ShipGraphics < Component
   end
 end
 
-class ShipPhysics < Component
+class ShipPhysics < PhysicsComponent
   FRICTION ||= 0.05
   
-  attr_accessor :x_vel, :y_vel
-  
-  def initialize(window, game_object, x_vel: 0, y_vel: 0)
-    super(window, game_object)
-    @x_vel, @y_vel = x_vel, y_vel
+  def initialize(window, game_object)
+    super
   end
 
   def update
-    object.x += self.x_vel
-    object.y += self.y_vel
-    self.x_vel *= 1 - FRICTION
-    self.y_vel *= 1 - FRICTION
+    super
+    self.vel_x *= 1 - FRICTION
+    self.vel_y *= 1 - FRICTION
   end
 end
 
 class ShipControls < Component
   THRUST_SPEED ||= 0.5
   
-  attr_accessor :x_vel, :y_vel
-  
   def initialize(window, game_object, object_pool)
     super(window, game_object)
-    @physics = object.physics
+    @physics = game_object.component(:physics)
     @object_pool = object_pool
   end
 
   def update
-    @physics.x_vel += THRUST_SPEED if @window.button_down? Gosu::KbRight
-    @physics.x_vel -= THRUST_SPEED if @window.button_down? Gosu::KbLeft
-    @physics.y_vel += THRUST_SPEED if @window.button_down? Gosu::KbDown
-    @physics.y_vel -= THRUST_SPEED if @window.button_down? Gosu::KbUp
+    if @physics
+      @physics.vel_x += THRUST_SPEED if @window.button_down? Gosu::KbRight
+      @physics.vel_x -= THRUST_SPEED if @window.button_down? Gosu::KbLeft
+      @physics.vel_y += THRUST_SPEED if @window.button_down? Gosu::KbDown
+      @physics.vel_y -= THRUST_SPEED if @window.button_down? Gosu::KbUp
+    else
+      raise 'Physics component missing!'
+    end
   end
 
   def button_down(id)
-    m = Missile.new(@window, @object_pool, x: object.x, y: object.y)
-    m.physics.x_vel = 10
+    if id == Gosu::KbSpace
+      m = Missile.new(@window, @object_pool, x: object.x, y: object.y)
+      m.physics.x_vel = 10
+    end
   end
 end
