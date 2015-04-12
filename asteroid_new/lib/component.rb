@@ -113,3 +113,30 @@ class MotionComponent < Component
     object.y += self.vel_y
   end
 end
+
+class CollisionComponent < Component
+  attr_accessor :radius, :health, :damage 
+
+  def initialize(window, game_object, radius: , health: Float::INFINITY, damage: 0)
+    super(window, game_object, :collision)
+    @radius = radius
+    @health = health
+    @damage = damage
+  end
+
+  def update
+    # override
+  end
+
+  def collides? other_obj
+    Gosu.distance(object.x, object.y, other_obj.x, other_obj.y) < self.radius + other_object.component(:collision).radius
+  end
+
+  def collide! (other_obj, cls)
+    # override - requires block
+  end
+
+  def collide_many! (obj_pool, cls)
+    # override - requires block
+  end
+end
