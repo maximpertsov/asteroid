@@ -3,7 +3,7 @@ class Rock < GameObject
     super(window, object_pool, x: x, y: y)
     RockSprite.new(@window, self, ang_vel: ang_vel)
     MotionComponent.new(@window, self, vel_x: vel_x, vel_y: vel_y)
-    CollisionComponent.new(@window, self, self.object_pool, radius: 45, health: 1, damage: 1, enemy_classes: [Missile])
+    CollisionComponent.new(@window, self, self.object_pool, radius: 40, max_collisions: 3, enemy_classes: [Missile], debug_mode: true)
   end
 end
 

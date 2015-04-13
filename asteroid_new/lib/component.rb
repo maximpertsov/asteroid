@@ -115,41 +115,65 @@ class MotionComponent < Component
 end
 
 class CollisionComponent < Component
-  attr_accessor :radius, :health, :damage 
+  attr_accessor :radius, :health, :damage, :num_collisions
 
-  def initialize(window, game_object, object_pool, radius: , health: Float::INFINITY, damage: 0, enemy_classes: [])
+  def initialize(window, game_object, object_pool, radius: , max_collisions: 1, enemy_classes: [], debug_mode: false)
     super(window, game_object, :collision)
     @object_pool = object_pool
     @radius = radius
-    @health = health
-    @damage = damage
+    @max_collisions = max_collisions
+    @num_collisions = 0
     @enemy_classes = enemy_classes
+    @collided_objects = Set.new
+    @debug_mode = debug_mode
   end
 
   def update
-    crash_enemies!
-    object.mark_for_removal if dead?
+    object.mark_for_removal if max_collisions_reached?
+    detect_collisions
+    process_collisions
   end
 
-  def dead?
-    self.health <= 0
+  def draw
+    draw_collision_circle if @debug_mode
+  end
+
+  def draw_collision_circle
+    Utils.draw_circle(@window, object.x, object.y, self.radius, Gosu::Color::RED, 5, 0.5)
+  end
+
+  def max_collisions_reached?
+    self.num_collisions >= @max_collisions
   end
   
   def collides? other_obj
-    Gosu.distance(object.x, object.y, other_obj.x, other_obj.y) < self.radius + other_obj.component(:collision).radius
-  end
-
-  def crash! other_obj
-    if (other_obj != object) && (self.collides? other_obj)
-      other_obj.component(:collision).health -= self.damage
+    collision_comp = other_obj.component(:collision)
+    if collision_comp
+      Gosu.distance(object.x, object.y, other_obj.x, other_obj.y) < self.radius + collision_comp.radius
+    else
+      false
     end
   end
 
-  def crash_enemies!
-    @object_pool.each do |o|
-      if @enemy_classes.any? {|e| o.instance_of? e}
-        self.crash! o
+  def detect_collision other_obj
+    if (other_obj != object) && self.collides?(other_obj)
+      if @collided_objects.add?(other_obj)
+        self.num_collisions += 1
       end
     end
+  end
+
+  def detect_collisions
+    @object_pool.each{|o| detect_collision o}
+    #puts "Size of #{object.class}: #{@collided_objects.size}"
+  end
+
+  def enemy? other_obj
+    @enemy_classes.any? {|e| other_obj.instance_of? e}
+  end
+
+  def process_collisions
+    @collided_objects.each{|o| puts "ouch!" if object.instance_of?(Rock)}
+    @collided_objects.clear
   end
 end
