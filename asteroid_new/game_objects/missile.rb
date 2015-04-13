@@ -3,6 +3,7 @@ class Missile < GameObject
     super(window, object_pool, x: x, y: y)
     MissileSprite.new(@window, self)
     MotionComponent.new(@window, self, vel_x: vel_x, vel_y: vel_y)
+    CollisionComponent.new(@window, self, self.object_pool, radius: 5, health: 1, damage: 1, enemy_classes: [Rock])
     MissileSounds.play(@window)
   end
 end

@@ -117,26 +117,39 @@ end
 class CollisionComponent < Component
   attr_accessor :radius, :health, :damage 
 
-  def initialize(window, game_object, radius: , health: Float::INFINITY, damage: 0)
+  def initialize(window, game_object, object_pool, radius: , health: Float::INFINITY, damage: 0, enemy_classes: [])
     super(window, game_object, :collision)
+    @object_pool = object_pool
     @radius = radius
     @health = health
     @damage = damage
+    @enemy_classes = enemy_classes
   end
 
   def update
-    # override
+    crash_enemies!
+    object.mark_for_removal if dead?
   end
 
+  def dead?
+    self.health <= 0
+  end
+  
   def collides? other_obj
-    Gosu.distance(object.x, object.y, other_obj.x, other_obj.y) < self.radius + other_object.component(:collision).radius
+    Gosu.distance(object.x, object.y, other_obj.x, other_obj.y) < self.radius + other_obj.component(:collision).radius
   end
 
-  def collide! (other_obj, cls)
-    # override - requires block
+  def crash! other_obj
+    if (other_obj != object) && (self.collides? other_obj)
+      other_obj.component(:collision).health -= self.damage
+    end
   end
 
-  def collide_many! (obj_pool, cls)
-    # override - requires block
+  def crash_enemies!
+    @object_pool.each do |o|
+      if @enemy_classes.any? {|e| o.instance_of? e}
+        self.crash! o
+      end
+    end
   end
 end

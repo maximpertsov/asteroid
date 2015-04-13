@@ -1,4 +1,6 @@
 class ObjectPool
+  include Enumerable
+
   def initialize
     @objects = Set.new
     @new_objects = Set.new   # holds newly created objects which then get transferred to the main object pool
@@ -26,7 +28,7 @@ class ObjectPool
     @new_objects << obj
   end
 
-  def select
-    @objects.select
+  def each &block
+    @objects.each{|o| block.call(o)}
   end
 end

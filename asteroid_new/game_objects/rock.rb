@@ -3,12 +3,13 @@ class Rock < GameObject
     super(window, object_pool, x: x, y: y)
     RockSprite.new(@window, self, ang_vel: ang_vel)
     MotionComponent.new(@window, self, vel_x: vel_x, vel_y: vel_y)
+    CollisionComponent.new(@window, self, self.object_pool, radius: 45, health: 1, damage: 1, enemy_classes: [Missile])
   end
 end
 
 class RockSprite < SpriteComponent
-  IMAGE ||= 'yarn_ball_256x256.png' #'asteroid_blue.png'
-  TILE_SIZE ||= [256, 256] # [90, 90]
+  IMAGE ||= 'asteroid_blue.png' # 'yarn_ball_256x256.png'
+  TILE_SIZE ||= [90, 90] # [256, 256]
   
   def initialize(window, game_object, ang_vel: 0, image_file: IMAGE, tile_size: TILE_SIZE)
     super
@@ -17,7 +18,7 @@ class RockSprite < SpriteComponent
   # temporarily over-writing method until I implement a generic way to scale objects
   def draw
     image = current_frame
-    image.draw_rot(self.x, self.y, self.z, self.ang, 0.5, 0.5, 0.25, 0.25, self.color)
+    image.draw_rot(self.x, self.y, self.z, self.ang, 0.5, 0.5, 1, 1, self.color)
   end
 
   private
