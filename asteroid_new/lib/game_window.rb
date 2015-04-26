@@ -29,13 +29,19 @@ class GameWindow < Gosu::Window
   
   # =====================
   # state management (consider moving to it's own class)
+
+  def has_state?
+    !@states.empty?
+  end
   
   def enter_state(state)
+    current_state.pause if has_state?
     @states << state.new(self)
   end
 
   def exit_state
     @states.pop
+    current_state.resume if has_state?
   end
 
   def current_state

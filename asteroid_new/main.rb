@@ -31,6 +31,11 @@ module Utils
     [Gosu::Image.new(window, Utils.media_path(image_file))]
   end
 
+  def self.load_song(song_file)
+    file_path = Utils.media_path(song_file)
+    Gosu::Song.new(file_path) if File.file? file_path
+  end
+
   def self.draw_point(window, x, y, c, z = 0, sz = 1)
     window.draw_quad(x + sz, y + sz, c, x + sz, y - sz, c, x - sz, y - sz, c, x - sz, y + sz, c, z)
   end

@@ -16,11 +16,12 @@ class BackgroundSprite < SpriteComponent
 
   def update
     super
-    object.x = object.x % (@window.width * 2)
+    object.x = object.x % (@window.width)
   end
 
   def draw
     image = current_frame
+    image.draw(self.x, self.y, self.z)
     image.draw(self.x - @window.width, self.y, self.z)
   end
   
