@@ -1,9 +1,6 @@
 class GameState
-  attr_reader :scroll_x
-  
-  def initialize(window, scroll_x: 0)
+  def initialize(window)
     @window = window
-    @scroll_x = scroll_x
   end
 
   def update
@@ -50,8 +47,10 @@ class PlayState < GameState
   SCROLL_SPEED ||= 5
   
   def initialize(window)
-    super(window, scroll_x: SCROLL_SPEED)
+    super(window)
     @object_pool = ObjectPool.new
+    Background.new(@window, @object_pool, vel_x: -SCROLL_SPEED)
+    Background.new(@window, @object_pool, x: @window.width, vel_x: -SCROLL_SPEED)
     Ship.new(@window, @object_pool, x: 150, y: 150)
   end
 
@@ -97,7 +96,7 @@ end
 # ------------------------
 
 class PausedState < GameState  
-  def initialize(window)
+  def initialize(window, background)
     super(window)
     @text = GameText.new(@window, alignment: :center, text: 'PAUSED - PRESS P OR ESCAPE TO RESUME')
   end

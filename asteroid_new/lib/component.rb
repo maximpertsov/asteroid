@@ -96,7 +96,6 @@ class SpriteComponent < Component
   
   def animation
     @window.load_image(@image_file, @tile_size)
-    # override
   end
 end
 

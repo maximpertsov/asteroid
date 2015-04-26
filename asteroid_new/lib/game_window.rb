@@ -5,7 +5,6 @@ class GameWindow < Gosu::Window
   def initialize
     super(*WIN_SIZE, false)
     self.caption = CAPTION
-    @background = Background.new(self)
     @states = []
     @images = {}
     @sounds = {}
@@ -14,12 +13,10 @@ class GameWindow < Gosu::Window
 
   def update
     current_state.update
-    @background.update
   end
 
   def draw
     current_state.draw
-    @background.draw
   end
 
   def button_down(id)
@@ -31,11 +28,6 @@ class GameWindow < Gosu::Window
   end
   
   # =====================
-  
-  def scroll_x=(speed)
-    @background.scroll_x = speed
-  end
-
   # state management (consider moving to it's own class)
   
   def enter_state(state)
@@ -52,34 +44,18 @@ class GameWindow < Gosu::Window
 
   # =====================
   
-  def load_image(image_file, tile_size)
-    @images[image_file] ||= Utils.load_tiles(self, image_file, tile_size)
+  def load_image(image_file, tile_size = nil)
+    if tile_size
+      @images[image_file] ||= Utils.load_tiles(self, image_file, tile_size)
+    else
+      @images[image_file] ||= Utils.load_image(self, image_file)
+    end
   end
 end
 
 # ------------------
 #  Display Elements
 # ------------------
-
-class Background
-  IMAGE = 'nebula_blue.s2014.png'
-
-  def initialize(window)
-    @window = window
-    @image = Gosu::Image.new(@window, Utils.media_path(IMAGE))
-    @x = 0
-  end
-
-  def update
-    @x = @x % @window.width
-    @x -= @window.current_state.scroll_x
-  end
-
-  def draw
-    @image.draw(@x, 0, 0)
-    @image.draw(@x - @window.width, 0, 0)
-  end
-end
 
 class GameText
   FONT ||= 'synchro_let.ttf'

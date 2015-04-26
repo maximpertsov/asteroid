@@ -12,6 +12,7 @@ require 'object_pool'
 require 'component'
 
 #entities
+require 'background'
 require 'ship'
 require 'explosion'
 require 'missile'
@@ -24,6 +25,10 @@ module Utils
 
   def self.load_tiles(window, image_file, tile_size, tileable=false)
     Gosu::Image.load_tiles(window, Utils.media_path(image_file), *tile_size, tileable)
+  end
+
+  def self.load_image(window, image_file)
+    [Gosu::Image.new(window, Utils.media_path(image_file))]
   end
 
   def self.draw_point(window, x, y, c, z = 0, sz = 1)
