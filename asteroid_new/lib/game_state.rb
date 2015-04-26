@@ -1,25 +1,30 @@
 class GameState
-  def initialize(window, music: nil)
+  def initialize(window, object_pool: ObjectPool.new, music: nil)
     @window = window
-    @object_pool = ObjectPool.new
+    @object_pool = object_pool
+    @updating = true
     if music
       @music = Utils.load_song(music) and @music.play(true)
     end
   end
 
   def update
-    # override
+    @object_pool.update if updating?
   end
 
   def draw
-    # override
+    @object_pool.draw
   end
 
   def button_down(id)
-    # override
+    @object_pool.button_down(id)
   end
 
   def button_up(id)
+    @object_pool.button_up(id)
+  end
+
+  def enter
     # override
   end
 
@@ -34,6 +39,10 @@ class GameState
   def music?
     !@music.nil?
   end
+
+  def updating?
+    @updating
+  end
 end
 
 # -----------------------
@@ -43,11 +52,7 @@ end
 class IntroState < GameState  
   def initialize(window)
     super(window)
-    @text = GameText.new(@window, alignment: :center, text: 'PRESS SPACE TO BEGIN')
-  end
-
-  def draw
-    @text.draw
+    GameText.new(@window, @object_pool, alignment: :center, text: 'PRESS SPACE TO BEGIN')
   end
 
   def button_down(id)
@@ -60,7 +65,7 @@ end
 # ----------------------
 
 class PlayState < GameState
-  SCROLL_SPEED ||= 5
+  SCROLL_SPEED ||= 1
   MUSIC = "vectorman_day4.mp3"
   
   def initialize(window)
@@ -70,22 +75,14 @@ class PlayState < GameState
   end
 
   def update
-    @object_pool.update
+    super
     random_rock
   end
 
-  def draw
-    @object_pool.draw
-  end
-
   def button_down(id)
-    if id == Gosu::KbP
-      @window.enter_state(PausedState)
-    end
+    @window.enter_state(PausedState) if id == Gosu::KbP
     @window.close if id == Gosu::KbEscape     # Make this go to menu state
-    #random_explosion if id == Gosu::KbSpace   # TESTING
-    #Missile.new(@window, @object_pool, x: 100, y: 100) if id == Gosu::KbSpace  # TESTING
-    @object_pool.button_down(id)
+    super
   end
 
   private
@@ -109,12 +106,13 @@ class PlayState < GameState
   # spawn random rocks towards the player
   def random_incoming(delta, rock_count, now)
     if delta > 100 && rock_count < rand(5..15)
-      Rock.new(@window, @object_pool, x: @window.width, y: rand(0.0..@window.height), vel_x: rand(-2.0..-1.0), vel_y: rand(-0.5..0.5), ang_vel: rand(-0.5..0.5))
+      rand_rot = rand(0.1..0.5) * [-1, 1].sample
+      Rock.new(@window, @object_pool, x: @window.width, y: rand(0.0..@window.height), vel_x: rand(-3.0..-2.0), vel_y: rand(-0.5..0.5), ang_vel: rand_rot)
       @last_spawn = now
     end
   end
   
-    # spawn random rocks in the middle of the stage
+  # spawn random rocks in the middle of the stage
   def random_middle(delta, rock_count, now)
     if delta > 100 && rock_count < rand(5..15)
       rand_x = @window.width * rand(0.4..0.6)
@@ -147,11 +145,7 @@ end
 class PausedState < GameState  
   def initialize(window)
     super(window)
-    @text = GameText.new(@window, alignment: :center, text: 'PAUSED - PRESS P OR ESCAPE TO RESUME')
-  end
-
-  def draw
-    @text.draw
+    GameText.new(@window, @object_pool, alignment: :center, text: 'PAUSED - PRESS P OR ESCAPE TO RESUME')
   end
 
   def button_down(id)

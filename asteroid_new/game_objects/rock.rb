@@ -26,8 +26,4 @@ class RockSprite < SpriteComponent
   def done?
     @done ||= object.x < -10 # object goes off left edge of screen
   end
-  
-  # def animation
-  #   @@animation ||= Utils.load_tiles(@window, @image_file, @tile_size)
-  # end
 end

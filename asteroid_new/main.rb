@@ -13,6 +13,7 @@ require 'component'
 
 #entities
 require 'background'
+require 'game_text'
 require 'ship'
 require 'explosion'
 require 'missile'
@@ -31,6 +32,7 @@ module Utils
     [Gosu::Image.new(window, Utils.media_path(image_file))]
   end
 
+  # load Gosu Song object from music file; returns nil if file isn't found
   def self.load_song(song_file)
     file_path = Utils.media_path(song_file)
     Gosu::Song.new(file_path) if File.file? file_path

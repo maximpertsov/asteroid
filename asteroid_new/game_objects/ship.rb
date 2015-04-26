@@ -1,9 +1,10 @@
 class Ship < GameObject
   def initialize(window, object_pool, x: , y: )
     super
+    # load internal components
     [ShipSprite, ShipMotion].map{|c| c.new(@window, self)}
-    CollisionComponent.new(@window, self, self.object_pool, radius: 25, enemy_classes: [Rock], debug_mode: true, explodes: true)
-    ShipShooting.new(@window, self, self.object_pool)
+    # load interactive components
+    [ShipCollisions, ShipShooting].map{|c| c.new(@window, self, object_pool)}
   end
 end
 
@@ -12,8 +13,8 @@ class ShipSprite < SpriteComponent
   TILE_SIZE ||= [90, 90]
   FRAME_DELAY ||= 10
   
-  def initialize(window, game_object, image_file: IMAGE, tile_size: TILE_SIZE, frame_delay: FRAME_DELAY)
-    super
+  def initialize(window, game_object)
+    super(window, game_object, image_file: IMAGE, tile_size: TILE_SIZE, frame_delay: FRAME_DELAY)
   end
 end
 
@@ -34,6 +35,14 @@ class ShipMotion < MotionComponent
     self.vel_x -= THRUST_SPEED if @window.button_down? Gosu::KbLeft
     self.vel_y += THRUST_SPEED if @window.button_down? Gosu::KbDown
     self.vel_y -= THRUST_SPEED if @window.button_down? Gosu::KbUp
+  end
+end
+
+class ShipCollisions < CollisionComponent
+  RADIUS ||= 25
+  
+  def initialize(window, game_object, object_pool)
+    super(window, game_object, object_pool, radius: RADIUS, enemy_classes: [Rock], debug_mode: true, explodes: true)
   end
 end
 
