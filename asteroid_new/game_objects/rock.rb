@@ -3,7 +3,7 @@ class Rock < GameObject
     super(window, object_pool, x: x, y: y)
     RockSprite.new(@window, self, ang_vel: ang_vel)
     MotionComponent.new(@window, self, vel_x: vel_x, vel_y: vel_y)
-    CollisionComponent.new(@window, self, self.object_pool, radius: 40, max_collisions: 3, enemy_classes: [Missile], debug_mode: true)
+    CollisionComponent.new(@window, self, self.object_pool, radius: 40, max_collisions: 3, enemy_classes: [Missile], explodes: true, debug_mode: false)
   end
 end
 
@@ -27,7 +27,7 @@ class RockSprite < SpriteComponent
     @done ||= object.x < -10 # object goes off left edge of screen
   end
   
-  def animation
-    @@animation ||= Utils.load_tiles(@window, @image_file, @tile_size)
-  end
+  # def animation
+  #   @@animation ||= Utils.load_tiles(@window, @image_file, @tile_size)
+  # end
 end

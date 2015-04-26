@@ -95,6 +95,7 @@ class SpriteComponent < Component
   end
   
   def animation
+    @window.load_image(@image_file, @tile_size)
     # override
   end
 end
@@ -117,7 +118,7 @@ end
 class CollisionComponent < Component
   attr_accessor :radius, :health, :damage, :num_collisions
 
-  def initialize(window, game_object, object_pool, radius: , max_collisions: 1, enemy_classes: [], debug_mode: false)
+  def initialize(window, game_object, object_pool, radius: , max_collisions: 1, enemy_classes: [], debug_mode: false, explodes: false)
     super(window, game_object, :collision)
     @object_pool = object_pool
     @radius = radius
@@ -126,10 +127,14 @@ class CollisionComponent < Component
     @enemy_classes = enemy_classes
     @collided_objects = Set.new
     @debug_mode = debug_mode
+    @explodes = explodes
   end
 
   def update
-    object.mark_for_removal if max_collisions_reached?
+    if max_collisions_reached?
+      object.mark_for_removal
+      Explosion.new(@window, @object_pool, x: object.x, y: object.y) if @explodes # move this into a separate component!
+    end
     detect_collisions
     process_collisions
   end
@@ -156,7 +161,7 @@ class CollisionComponent < Component
   end
 
   def detect_collision other_obj
-    if (other_obj != object) && self.collides?(other_obj)
+    if (other_obj != object) && self.collides?(other_obj) && @enemy_classes.any?{|e| other_obj.instance_of? e}
       if @collided_objects.add?(other_obj)
         self.num_collisions += 1
       end
@@ -173,7 +178,6 @@ class CollisionComponent < Component
   end
 
   def process_collisions
-    @collided_objects.each{|o| puts "ouch!" if object.instance_of?(Rock)}
-    @collided_objects.clear
+    # override
   end
 end

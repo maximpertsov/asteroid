@@ -82,9 +82,9 @@ class PlayState < GameState
     now = Gosu.milliseconds
     delta = now - (@last_spawn ||= now)
     rock_count = @object_pool.select{|o| o.is_a? Rock}.size
-    if delta > 100 && rock_count < 1 #rand(5..15)
-      Rock.new(@window, @object_pool, x: @window.width * rand(0.4..0.6), y: @window.height * rand(0.4..0.6), vel_x: 0, vel_y: 0, ang_vel: 1)
-      #Rock.new(@window, @object_pool, x: @window.width, y: rand(0.0..@window.height), vel_x: rand(-2.0..-1.0), vel_y: rand(-0.5..0.5), ang_vel: rand(-0.5..0.5))
+    if delta > 100 && rock_count < rand(5..15)
+      #Rock.new(@window, @object_pool, x: @window.width * rand(0.4..0.6), y: @window.height * rand(0.4..0.6), vel_x: 0, vel_y: 0, ang_vel: 1)
+      Rock.new(@window, @object_pool, x: @window.width, y: rand(0.0..@window.height), vel_x: rand(-2.0..-1.0), vel_y: rand(-0.5..0.5), ang_vel: rand(-0.5..0.5))
       #Rock.new(@window, @object_pool, x: @window.width, y: @window.height * 0.30 + 70 * Math.sin(now/200), vel_x: -1, vel_y: 0, ang_vel: rand(-0.5..0.5))
       #Rock.new(@window, @object_pool, x: @window.width, y: @window.height * 0.60 - 70 * Math.sin(now/200 + Math::PI), vel_x: -1, vel_y: 0, ang_vel: rand(-0.5..0.5))
       @last_spawn = now

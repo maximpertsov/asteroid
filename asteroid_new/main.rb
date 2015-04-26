@@ -1,4 +1,3 @@
-$: << File.dirname(__FILE__)
 ['lib', 'game_states', 'game_objects'].each {|f| $: << (File.join(File.dirname(__FILE__), f))}
 
 # built-in modules and Gems

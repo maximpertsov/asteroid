@@ -21,10 +21,6 @@ class ExplosionSprite < SpriteComponent
   def done?
     @done ||= @current_frame >= animation.size
   end
-  
-  def animation
-    @@animation ||= Utils.load_tiles(@window, @image_file, @tile_size)
-  end
 end
 
 class ExplosionSounds < Component

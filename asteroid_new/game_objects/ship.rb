@@ -2,6 +2,7 @@ class Ship < GameObject
   def initialize(window, object_pool, x: , y: )
     super
     [ShipSprite, ShipMotion].map{|c| c.new(@window, self)}
+    CollisionComponent.new(@window, self, self.object_pool, radius: 25, enemy_classes: [Rock], debug_mode: true, explodes: true)
     ShipShooting.new(@window, self, self.object_pool)
   end
 end
@@ -13,12 +14,6 @@ class ShipSprite < SpriteComponent
   
   def initialize(window, game_object, image_file: IMAGE, tile_size: TILE_SIZE, frame_delay: FRAME_DELAY)
     super
-  end
-
-  private
-
-  def animation
-    @@animation ||= Utils.load_tiles(@window, @image_file, @tile_size)
   end
 end
 

@@ -23,10 +23,6 @@ class MissileSprite < SpriteComponent
   def done?
     @done ||= Gosu.milliseconds - @time_created >= LIFESPAN
   end
-  
-  def animation
-    @@animation ||= Utils.load_tiles(@window, @image_file, @tile_size)
-  end
 end
 
 class MissileSounds < Component

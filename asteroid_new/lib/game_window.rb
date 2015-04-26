@@ -7,6 +7,8 @@ class GameWindow < Gosu::Window
     self.caption = CAPTION
     @background = Background.new(self)
     @states = []
+    @images = {}
+    @sounds = {}
     enter_state(IntroState)
   end
 
@@ -24,6 +26,12 @@ class GameWindow < Gosu::Window
     current_state.button_down(id)
   end
 
+  def button_up(id)
+    current_state.button_up(id)
+  end
+  
+  # =====================
+  
   def scroll_x=(speed)
     @background.scroll_x = speed
   end
@@ -40,6 +48,12 @@ class GameWindow < Gosu::Window
 
   def current_state
     @states[-1]
+  end
+
+  # =====================
+  
+  def load_image(image_file, tile_size)
+    @images[image_file] ||= Utils.load_tiles(self, image_file, tile_size)
   end
 end
 
