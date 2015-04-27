@@ -71,12 +71,13 @@ class PlayState < GameState
   def initialize(window)
     super(window, music: MUSIC)
     @background = Background.new(@window, @object_pool, vel_x: -SCROLL_SPEED)
-    Ship.new(@window, @object_pool, x: 150, y: 150)
+    @player = Ship.new(@window, @object_pool, x: 150, y: 150)
   end
 
   def update
     super
     random_rock
+    @window.exit_state if !@object_pool.member?(@player)
   end
 
   def button_down(id)
@@ -96,8 +97,8 @@ class PlayState < GameState
     delta = now - (@last_spawn ||= now)
     rock_count = @object_pool.select{|o| o.is_a? Rock}.size
 
-    random_incoming(delta, rock_count, now)
-    #random_middle(delta, rock_count, now)
+    #random_incoming(delta, rock_count, now)
+    random_middle(delta, rock_count, now)
     #sine_wave(delta, now)
   end
 
@@ -114,7 +115,7 @@ class PlayState < GameState
   
   # spawn random rocks in the middle of the stage
   def random_middle(delta, rock_count, now)
-    if delta > 100 && rock_count < rand(5..15)
+    if delta > 100 && rock_count < 1 #rand(5..15)
       rand_x = @window.width * rand(0.4..0.6)
       rand_y = @window.height * rand(0.4..0.6)
       Rock.new(@window, @object_pool, x: rand_x, y: rand_y, vel_x: 0, vel_y: 0, ang_vel: 1)

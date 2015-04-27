@@ -24,5 +24,6 @@ class BackgroundSprite < SpriteComponent
     image.draw(self.x, self.y, self.z)
     image.draw(self.x - @window.width, self.y, self.z)
   end
-  
 end
+
+# class BackgroundMotion < SpriteComponent

@@ -31,4 +31,8 @@ class ObjectPool
   def each &block
     @objects.each{|o| block.call(o)}
   end
+
+  def member? obj
+    @objects.member? obj
+  end
 end

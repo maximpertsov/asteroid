@@ -115,14 +115,13 @@ class MotionComponent < Component
 end
 
 class CollisionComponent < Component
-  attr_accessor :radius, :health, :damage, :num_collisions
+  attr_accessor :radius, :num_collisions
 
   def initialize(window, game_object, object_pool, radius: , max_collisions: 1, enemy_classes: [], debug_mode: false, explodes: false)
     super(window, game_object, :collision)
     @object_pool = object_pool
     @radius = radius
-    @max_collisions = max_collisions
-    @num_collisions = 0
+    @max_collisions = max_collisions   # treat as health
     @enemy_classes = enemy_classes
     @collided_objects = Set.new
     @debug_mode = debug_mode
@@ -130,53 +129,55 @@ class CollisionComponent < Component
   end
 
   def update
-    if max_collisions_reached?
-      object.mark_for_removal
-      Explosion.new(@window, @object_pool, x: object.x, y: object.y) if @explodes # move this into a separate component!
-    end
-    detect_collisions
     process_collisions
+    detect_collisions
   end
 
   def draw
     draw_collision_circle if @debug_mode
   end
 
-  def draw_collision_circle
-    Utils.draw_circle(@window, object.x, object.y, self.radius, Gosu::Color::RED, 5, 0.5)
+  def max_collisions_reached?
+    @max_collisions <= 0
   end
 
-  def max_collisions_reached?
-    self.num_collisions >= @max_collisions
+  def enemy? other_obj
+    @enemy_classes.any? {|e| other_obj.instance_of? e}
   end
   
   def collides? other_obj
     collision_comp = other_obj.component(:collision)
     if collision_comp
       Gosu.distance(object.x, object.y, other_obj.x, other_obj.y) < self.radius + collision_comp.radius
-    else
-      false
     end
   end
-
+  
   def detect_collision other_obj
     if (other_obj != object) && self.collides?(other_obj) && @enemy_classes.any?{|e| other_obj.instance_of? e}
-      if @collided_objects.add?(other_obj)
-        self.num_collisions += 1
-      end
+      @collided_objects << other_obj
     end
   end
 
   def detect_collisions
     @object_pool.each{|o| detect_collision o}
-    #puts "Size of #{object.class}: #{@collided_objects.size}"
   end
 
-  def enemy? other_obj
-    @enemy_classes.any? {|e| other_obj.instance_of? e}
+  def process_collision other_obj
+    @max_collisions -= 1
+    if max_collisions_reached?
+      object.mark_for_removal
+      Explosion.new(@window, @object_pool, x: object.x, y: object.y) if @explodes # move this into a separate component!
+    end
   end
 
   def process_collisions
-    # override
+    @collided_objects.each {|o| process_collision o}
+    @collided_objects.clear
+  end
+
+  private
+  
+  def draw_collision_circle
+    Utils.draw_circle(@window, object.x, object.y, self.radius, Gosu::Color::RED, 5, 0.5)
   end
 end

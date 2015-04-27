@@ -41,6 +41,7 @@ class GameWindow < Gosu::Window
   end
 
   def exit_state
+    current_state.pause if has_state?   # considering writing a different method for popping states
     @states.pop
     current_state.resume if has_state?
   end
