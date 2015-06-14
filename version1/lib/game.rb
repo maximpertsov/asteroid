@@ -32,7 +32,7 @@ module Asteroid
     
 
       @sprite_groups = Hash[:ships, SpriteGroup.new(@kabooms[:standard]),
-                            :missiles, SpriteGroup.new(@kabooms[:standard], 3),
+                            :missiles, SpriteGroup.new(@kabooms[:big_red], 3),
                             :rocks, SpriteGroup.new(@kabooms[:standard])]
       
       @rock_speed_range = INIT_ROCK_SPEED_RANGE

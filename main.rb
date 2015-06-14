@@ -14,14 +14,14 @@ class Program
 
   def run
     if ARGV.empty?
-      puts "poop"
+      puts "Please specify a verions:\n'v1' for the old version or 'v2' for the beta new version"
     else
       v = ARGV[0]
       if @versions.key? v
         $: << File.join(File.dirname(__FILE__), @versions[v])
         require "asteroid"
       else  
-        puts "still poop"
+        puts "'#{v}' is not a valid version"
       end
     end
   end
