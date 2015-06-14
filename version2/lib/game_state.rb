@@ -97,9 +97,9 @@ class PlayState < GameState
     delta = now - (@last_spawn ||= now)
     rock_count = @object_pool.select{|o| o.is_a? Rock}.size
 
-    #random_incoming(delta, rock_count, now)
-    random_middle(delta, rock_count, now)
-    #sine_wave(delta, now)
+    # random_incoming(delta, rock_count, now)
+    # random_middle(delta, rock_count, now)
+    sine_wave(delta, now)
   end
 
   private

@@ -78,7 +78,7 @@ module Asteroid
     
     def load_image_info media_info
       @tile_size = media_info.tile_size
-      @image_tiles = Gosu::Image.load_tiles(@game, media_info.image_file, *@tile_size, false)
+      load_image(media_info)
       @num_tiles = @image_tiles.size
       @radius = media_info.radius
       @scale = media_info.scale
@@ -86,6 +86,13 @@ module Asteroid
       @lifespan = media_info.lifespan
       @animated = media_info.animated
       @z = media_info.z
+    end
+
+    # retrieve image from cache or load image
+    def load_image(media_info)
+      img_file = media_info.image_file
+      @game.images[img_file] ||= Gosu::Image.load_tiles(@game, img_file, *@tile_size, false)
+      @image_tiles = @game.images[img_file]
     end
 
     def play_sample media_info

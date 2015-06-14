@@ -1,6 +1,7 @@
 module Asteroid
   class Game < Gosu::Window
     attr_reader :running
+    attr_accessor :images
         
     def initialize
       super(*WINDOW_SIZE, false)
@@ -11,6 +12,9 @@ module Asteroid
       @timer_display = Gosu::Font.new(self, 'Synchro Let', 50)
       @result_display = Gosu::Font.new(self, 'Synchro Let', 50)
 
+      # quick and dirty image cache - store images that have already been loaded
+      @images = {}
+      
       # sounds
       #@missile_sound = Gosu::Sample.new(self, MISSILE_SOUND)
       @thrust_sound = Gosu::Sample.new(self, THRUST_SOUND)
@@ -18,8 +22,6 @@ module Asteroid
 
       # base sprites
       @ship_info = MediaInfo.new(image_file: SHIP_IMAGE, tile_size: [90, 90], radius: 35)
-      #@missile_info = MediaInfo.new(image_file: MISSILE_IMAGE, tile_size: [10, 10], radius: 3, lifespan: 50, sound: @missile_sound)
-      #@rock_info = MediaInfo.new(image_file: ROCK_IMAGE, tile_size: [90, 90], radius: 40)
       @kaboom_info = MediaInfo.new(image_file: KABOOM_IMAGE, tile_size: [128, 128], radius: 17, animated: true, lifespan: 24, z: 5, sound: @kaboom_sound)
       
       # different kinds of explosions
@@ -30,7 +32,7 @@ module Asteroid
     
 
       @sprite_groups = Hash[:ships, SpriteGroup.new(@kabooms[:standard]),
-                            :missiles, SpriteGroup.new(@kabooms[:big_red], 3),
+                            :missiles, SpriteGroup.new(@kabooms[:standard], 3),
                             :rocks, SpriteGroup.new(@kabooms[:standard])]
       
       @rock_speed_range = INIT_ROCK_SPEED_RANGE
@@ -38,7 +40,7 @@ module Asteroid
       
       spawn_ship
 
-      @rock_generator = RockGenerator.new(self, @rock_info, @rock_speed_range, ROCK_SPIN_RANGE, nil)# @ship)
+      @rock_generator = RockGenerator.new(self, @rock_info, @rock_speed_range, ROCK_SPIN_RANGE, nil)
       
       @score = 0
       @timer = 20
@@ -71,12 +73,6 @@ module Asteroid
       draw_messages
       if @timer > 0
         @sprite_groups.each_value {|s| s.draw}
-      #   @score_display.draw_rel("SCORE: #{@score}  GOAL: #{@goal}", 20, 20, 10, 0, 0, 1, 1, (@score < @goal) ? Gosu::Color::GREEN : Gosu::Color::BLUE)
-      #   @timer_display.draw_rel("TIME: #{@timer.to_i}", self.width - 20, 20, 10, 1, 0, 1, 1, (@timer > 5) ? Gosu::Color::GREEN : Gosu::Color::RED)
-      # elsif @score >= @goal
-      #   @result_display.draw_rel("SUCCESS!", self.width / 2, self.height / 2, 10, 0.5, 0.5, 1, 1, Gosu::Color::GREEN)
-      # else
-      #   @result_display.draw_rel("YOU FAILED!", self.width / 2, self.height / 2, 10, 0.5, 0.5, 1, 1, Gosu::Color::GREEN)
       end
     end
 

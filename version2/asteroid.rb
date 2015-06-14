@@ -20,10 +20,6 @@ require 'missile'
 require 'rock'
 
 module Utils
-  def self.media_path(file)
-    File.join(File.dirname(__FILE__), 'media', file)
-  end
-
   def self.load_tiles(window, image_file, tile_size, tileable=false)
     Gosu::Image.load_tiles(window, Utils.media_path(image_file), *tile_size, tileable)
   end

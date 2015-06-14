@@ -1,15 +1,17 @@
-require 'gosu'
-require_relative 'vector_math'
-require_relative 'chasing'
+['lib', 'media'].each {|f| $: << File.join(File.dirname(__FILE__), f)}
 
-require_relative 'media_info'
-require_relative 'sprite'
-require_relative 'rock'
-require_relative 'missile'
-require_relative 'ship'
-require_relative 'rock_generator'
-require_relative 'sprite_group'
-require_relative 'game'
+require 'gosu'
+require 'vector_math'
+require 'chasing'
+
+require 'media_info'
+require 'sprite'
+require 'rock'
+require 'missile'
+require 'ship'
+require 'rock_generator'
+require 'sprite_group'
+require 'game'
 
 module Asteroid  
   # Window and background
@@ -66,3 +68,5 @@ module Asteroid
   KABOOM_SOUND = "./media/explosion-01.ogg" # unverified license - MediaCollege.com
 
 end
+
+Asteroid::Game.new.show
