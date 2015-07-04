@@ -25,7 +25,7 @@ module Utils
   end
 
   def self.load_image(window, image_file)
-    [Gosu::Image.new(window, Utils.media_path(image_file))]
+    [Gosu::Image.new(window, Utils.media_path(image_file), false)]
   end
 
   # load Gosu Song object from music file; returns nil if file isn't found
@@ -45,6 +45,5 @@ module Utils
     end
   end
 end
-  
-GameWindow.new.show
 
+GameWindow.new.show
