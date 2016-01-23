@@ -2,11 +2,11 @@ module Asteroid
   class Game < Gosu::Window
     attr_reader :running
     attr_accessor :images
-        
+
     def initialize
       super(*WINDOW_SIZE, false)
       self.caption = WINDOW_TITLE
-        
+
       @background_image = Gosu::Image.new(self, BACKGROUND_IMAGE, true)
       @score_display = Gosu::Font.new(self, 'Synchro Let', 50)
       @timer_display = Gosu::Font.new(self, 'Synchro Let', 50)
@@ -14,7 +14,7 @@ module Asteroid
 
       # quick and dirty image cache - store images that have already been loaded
       @images = {}
-      
+
       # sounds
       #@missile_sound = Gosu::Sample.new(self, MISSILE_SOUND)
       @thrust_sound = Gosu::Sample.new(self, THRUST_SOUND)
@@ -23,32 +23,32 @@ module Asteroid
       # base sprites
       @ship_info = MediaInfo.new(image_file: SHIP_IMAGE, tile_size: [90, 90], radius: 35)
       @kaboom_info = MediaInfo.new(image_file: KABOOM_IMAGE, tile_size: [128, 128], radius: 17, animated: true, lifespan: 24, z: 5, sound: @kaboom_sound)
-      
+
       # different kinds of explosions
       @kabooms = Hash[:standard, @kaboom_info,
                       :small_blue, @kaboom_info.clone(new_scale: 0.25, new_color: Gosu::Color::CYAN, silent: true),
                       :big_red, @kaboom_info.clone(new_z: 2, new_scale: 5, new_color: Gosu::Color::RED),
                       :gas, @kaboom_info.clone(new_z: 2, new_color: Gosu::Color::FUCHSIA)]
-    
+
 
       @sprite_groups = Hash[:ships, SpriteGroup.new(@kabooms[:standard]),
                             :missiles, SpriteGroup.new(@kabooms[:big_red], 3),
                             :rocks, SpriteGroup.new(@kabooms[:standard])]
-      
+
       @rock_speed_range = INIT_ROCK_SPEED_RANGE
       @rock_limit = INIT_ROCK_LIMIT
-      
+
       spawn_ship
 
       @rock_generator = RockGenerator.new(self, @rock_info, @rock_speed_range, ROCK_SPIN_RANGE, nil)
-      
+
       @score = 0
       @timer = 20
       @goal = 3000
       @running = true
-            
+
     end
-    
+
     def pause
       @running = !@running
     end
@@ -67,7 +67,7 @@ module Asteroid
         end
       end
     end
-      
+
     def draw
       @background_image.draw(0, 0, 0)
       draw_messages
@@ -95,7 +95,7 @@ module Asteroid
 
     def read_sustained_inputs
       # These are inputs corresponding to actions that can be performed continuously
-      
+
       #Turn Left
       if button_down? Gosu::KbLeft or button_down? Gosu::GpLeft
         @ship.turn_left
@@ -115,7 +115,7 @@ module Asteroid
       #   @sprite_groups[:missiles].add(@ship.fire_missile)
       # end
     end
-    
+
     def process_collisions
       rocks_destroyed = rock_missile_collisions.select {|s| s.health < 1}
       update_score(rocks_destroyed.size * POINTS_PER_ROCK_DESTROYED)
@@ -128,7 +128,7 @@ module Asteroid
         if new_rock.distance(@ship) > safe_distance
           @sprite_groups[:rocks].add new_rock
         end
-      end      
+      end
     end
 
     def rock_missile_collisions
@@ -138,7 +138,7 @@ module Asteroid
     def rock_ship_collisions
       @sprite_groups[:rocks].group_collide! @sprite_groups[:ships]
     end
-    
+
     def update_score points
       unless @score.nil?
         @score += points
@@ -146,7 +146,7 @@ module Asteroid
     end
 
     def spawn_ship
-      @ship = Ship.new(self, @ship_info, @missile_info, @thrust_sound)     
+      @ship = Ship.new(self, @ship_info, @missile_info, @thrust_sound)
       @ship.warp(PLAYER_SPAWN_POSITION)
       #@sprite_groups[:rocks].set_target @ship
       @sprite_groups[:ships].add @ship
@@ -163,6 +163,6 @@ module Asteroid
         @result_display.draw_rel("YOU FAILED!", self.width / 2, self.height / 2, 10, 0.5, 0.5, 1, 1, Gosu::Color::GREEN)
       end
     end
-    
+
   end
 end
